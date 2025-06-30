@@ -12,34 +12,38 @@ public class SampleController {
     //외부 url을 찾아올수 있도록 하기 위해
 //    @RequestMapping(value = "/order/1", method = RequestMethod.GET)
     @GetMapping("/order/{orderId}")
-    public  String getOrder(@PathVariable("orderId") String id) {
+    public String getOrder(@PathVariable("orderId") String id) throws IllegalAccessException {
         log.info("Get some order : " + id);
-        return "OrderId:" + id +", orderAmount:1000";
+
+        if ("500".equals(id)) {
+            throw new IllegalAccessException("500 is not valid orderId");
+        }
+        return "OrderId:" + id + ", orderAmount:1000";
     }
 
     @DeleteMapping("/order/{orderId}")
-    public  String deleteOrder(@PathVariable("orderId") String id) {
+    public String deleteOrder(@PathVariable("orderId") String id) {
         log.info("Delete some order : " + id);
         return "Delete orderId:" + id;
     }
 
     // 파라미터로 이용해서 가져올수 있음 -> 게시판 같은 경우에 많이 사용(페이지, 서치키워드)
     @GetMapping("/order")
-    public  String getOrderWithParam(
-            @RequestParam(value = "orderId", required=false, defaultValue = "defaultId") String id,
+    public String getOrderWithParam(
+            @RequestParam(value = "orderId", required = false, defaultValue = "defaultId") String id,
             @RequestParam("orderAmount") Integer amount) {
         log.info("Get some order : " + id + ", amount : " + amount);
-        return "OrderId:" + id +", orderAmount:" + amount;
+        return "OrderId:" + id + ", orderAmount:" + amount;
     }
 
     //RequsetBody 사용 -> 큰 데이터 사용시 사용한다.
     @PostMapping("/order")
-    public  String createOrder(
+    public String createOrder(
             @RequestBody CreateOrderRequest createOrderRequest,
             @RequestHeader String userAccountId) {
         log.info("Get some order : " + createOrderRequest +
                 ", userAccountId : " + userAccountId);
-        return "OrderId:" + createOrderRequest.getOrderId() +", orderAmount:"
+        return "OrderId:" + createOrderRequest.getOrderId() + ", orderAmount:"
                 + createOrderRequest.getOrderAmount();
     }
 
@@ -51,7 +55,7 @@ public class SampleController {
 
 
     @Data //lombok을 이용한것
-    public static class CreateOrderRequest{
+    public static class CreateOrderRequest {
         private String orderId;
         private Integer orderAmount;
 
